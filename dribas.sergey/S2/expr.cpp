@@ -2,7 +2,6 @@
 #include <string>
 #include <limits>
 #include <cmath>
-#include <map>
 #include "stack.hpp"
 
 namespace
@@ -101,19 +100,31 @@ namespace
     return false;
   }
 
-  bool getPrecedence(const std::string& lhs, const std::string& rhs)
+  int getOperatorPrecedence(const std::string& op) 
   {
-    std::map< std::string, int > precedence;
-    precedence["+"] = 1;
-    precedence["-"] = 1;
-    precedence["*"] = 2;
-    precedence["/"] = 2;
-    precedence["%"] = 3;
-    precedence["|"] = 4;
-    if (precedence.find(lhs) == precedence.end() || precedence.find(rhs) == precedence.end()) {
+    if (op == "+" || op == "-") {
+      return 1;
+    }
+    if (op == "*" || op == "/") {
+      return 2;
+    }
+    if (op == "%") {
+      return 3;
+    }
+    if (op == "|") {
+      return 4;
+    }
+    return -1;
+  }
+
+  bool getPrecedence(const std::string& lhs, const std::string& rhs) 
+  {
+    int lhsPrec = getOperatorPrecedence(lhs);
+    int rhsPrec = getOperatorPrecedence(rhs);
+    if (lhsPrec == -1 || rhsPrec == -1) {
       return false;
     }
-    return precedence[lhs] >= precedence[rhs];
+    return lhsPrec >= rhsPrec;
   }
 }
 long long dribas::evaluatePostfix(Queue< std::string >& postfixQueue)
